@@ -30,23 +30,13 @@ int main(int args, char** argv) {
 		thread.join();
 	}
 
+	/// BACKGROUND
 
-
-//  cerr << "Options: -o outputprefix for class file" << endl;
-//  cerr << " -d output directory, including trailing slash" << endl;
-//  cerr << " -l read input filenames from list-file (one filename per line)" << endl;
-//  cerr << " -u produce one unified encoded corpus (in case multiple corpora are specified)" << endl;
-//  cerr << " -e extend specified class file with unseen classes" << endl;
-//  cerr << " -U encode all unseen classes using one special unknown class" << endl;
-//
-
-	boost::filesystem::path targetDir("/tmp/vac");
-
-	boost::filesystem::directory_iterator it(targetDir), eod;
-
+	boost::filesystem::path background_dir("/tmp/vac");
+	boost::filesystem::directory_iterator bit(background_dir), eod;
 
 	std::vector<boost::filesystem::path> background_input_files;
-	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(it, eod))
+	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(bit, eod))
 	{
 	    if(is_regular_file(p) && p.extension() == ".txt")
 	    {
@@ -56,6 +46,20 @@ int main(int args, char** argv) {
 
 	ColibriPLM plm = ColibriPLM(0.5);
 	plm.fit(background_input_files);
+
+	/// FOREGROUND
+
+	boost::filesystem::path foreground_dir("/tmp/vac");
+	boost::filesystem::directory_iterator fit(foreground_dir), eod;
+
+	std::vector<boost::filesystem::path> foreground_input_files;
+	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(fit, eod))
+	{
+	    if(is_regular_file(p) && p.extension() == ".txt")
+	    {
+	    	foreground_input_files.push_back(p);
+	    }
+	}
 
 
 	return 0;

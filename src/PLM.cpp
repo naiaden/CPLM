@@ -23,12 +23,12 @@ ColibriPLM::ColibriPLM(double interpolation_factor) : PLM(interpolation_factor) 
 
 void ColibriPLM::fit(std::vector<boost::filesystem::path> input_files) {
 
+	std::cout << "Found " << input_files.size() << " files" << std::endl;
+
 	for(auto i : input_files)
 	{
 		_class_encoder.build(i.string());
 	}
-
-	std::cout << "Found " << input_files.size() << " files" << std::endl;
 
 	_class_encoder.save("/tmp/tmpout/somefilename.colibri.cls");
 
@@ -61,6 +61,16 @@ double ColibriPLM::background_prob(Pattern pattern)
 double ColibriPLM::weighted_background_logprob(Pattern pattern)
 {
 	return log(background_prob(pattern) * (1-_interpolation_factor));
+}
+
+void ColibriPLM::create_lm(std::vector<boost::filesystem::path> input_files)
+{
+	std::cout << "Found " << input_files.size() << " files" << std::endl;
+
+	for(auto i : input_files)
+	{
+		_class_encoder.build(i.string());
+	}
 }
 
 ColibriPLM::~ColibriPLM() {

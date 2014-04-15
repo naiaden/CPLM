@@ -22,6 +22,7 @@ public:
 	virtual void fit(std::vector<boost::filesystem::path> input_files) = 0;
 	virtual double background_prob(Pattern pattern) = 0;
 	virtual double weighted_background_logprob(Pattern pattern) = 0;
+	virtual void create_lm(std::vector<boost::filesystem::path> input_files) = 0;
 
 protected:
 	PLM(double interpolation_factor);
@@ -41,6 +42,7 @@ public:
 	void fit(std::vector<boost::filesystem::path> input_files) override;
 	double background_prob(Pattern pattern) override;
 	double weighted_background_logprob(Pattern pattern) override;
+	void create_lm(std::vector<boost::filesystem::path> input_files) override;
 
 private:
 	ClassEncoder _class_encoder;
