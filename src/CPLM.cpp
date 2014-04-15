@@ -33,10 +33,10 @@ int main(int args, char** argv) {
 	/// BACKGROUND
 
 	boost::filesystem::path background_dir("/tmp/vac");
-	boost::filesystem::directory_iterator bit(background_dir), eod;
+	boost::filesystem::directory_iterator bit(background_dir), beod;
 
 	std::vector<boost::filesystem::path> background_input_files;
-	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(bit, eod))
+	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(bit, beod))
 	{
 	    if(is_regular_file(p) && p.extension() == ".txt")
 	    {
@@ -50,10 +50,10 @@ int main(int args, char** argv) {
 	/// FOREGROUND
 
 	boost::filesystem::path foreground_dir("/tmp/vac");
-	boost::filesystem::directory_iterator fit(foreground_dir), eod;
+	boost::filesystem::directory_iterator fit(foreground_dir), feod;
 
 	std::vector<boost::filesystem::path> foreground_input_files;
-	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(fit, eod))
+	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(fit, feod))
 	{
 	    if(is_regular_file(p) && p.extension() == ".txt")
 	    {

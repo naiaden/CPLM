@@ -70,8 +70,17 @@ void ColibriPLM::create_lm(std::vector<boost::filesystem::path> input_files)
 	for(auto i : input_files)
 	{
 		_class_encoder.build(i.string());
+
+//		_class_encoder.
 	}
 }
+
+//void EM(Pattern pattern, Document document, int iterations, double epsilon)
+//{
+//	double pattern_freq = log(4.0);
+//	double e_step = pattern_freq +
+//	double m_step =
+//}
 
 ColibriPLM::~ColibriPLM() {
 	// TODO Auto-generated destructor stub
