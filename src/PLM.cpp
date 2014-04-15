@@ -47,7 +47,7 @@ void ColibriPLM::fit(std::vector<boost::filesystem::path> input_files) {
 
 	///
 
-//	ClassDecoder class_decoder = ClassDecoder("/tmp/tmpout/somefilename.colibri.cls");
+	ClassDecoder class_decoder = ClassDecoder("/tmp/tmpout/somefilename.colibri.cls");
 
 	///
 
@@ -56,9 +56,15 @@ void ColibriPLM::fit(std::vector<boost::filesystem::path> input_files) {
 	options.MAXLENGTH = 1;
 	options.DOSKIPGRAMS = false;
 	options.DOREVERSEINDEX = false;
+	options.QUIET = true;
 
 	PatternModel<uint32_t> output_model = PatternModel<uint32_t>();
 	output_model.train(dat_output_file, options, nullptr);
+
+	for(auto &p : output_model)
+	{
+		std::cout << p.first.tostring(class_decoder) << "," << output_model.occurrencecount(p.first) << std::endl;
+	}
 }
 
 ColibriPLM::~ColibriPLM() {
