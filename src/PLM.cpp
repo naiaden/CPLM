@@ -8,6 +8,7 @@
 #include "PLM.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 
 
@@ -19,9 +20,17 @@ ColibriPLM::ColibriPLM(double interpolation_factor) : PLM(interpolation_factor) 
 	_class_encoder = ClassEncoder();
 	_class_decoder = ClassDecoder();
 	_pattern_model = PatternModel<uint32_t>();
+
+	// See https://github.com/proycon/colibri-core/blob/master/src/patternmodeller.cpp#L212
+	_pattern_model_options = PatternModelOptions();
+	_pattern_model_options.MAXLENGTH = 1;
+	_pattern_model_options.DOSKIPGRAMS = false;
+	_pattern_model_options.DOREVERSEINDEX = false;
+	_pattern_model_options.QUIET = true;
+
 }
 
-void ColibriPLM::fit(std::vector<boost::filesystem::path> input_files) {
+void ColibriPLM::create_background_model(std::vector<boost::filesystem::path> input_files) {
 
 	std::cout << "Found " << input_files.size() << " files" << std::endl;
 
@@ -41,17 +50,34 @@ void ColibriPLM::fit(std::vector<boost::filesystem::path> input_files) {
 
 	_class_decoder.load("/tmp/tmpout/somefilename.colibri.cls");
 
-	// See https://github.com/proycon/colibri-core/blob/master/src/patternmodeller.cpp#L212
-	PatternModelOptions options = PatternModelOptions();
-	options.MAXLENGTH = 1;
-	options.DOSKIPGRAMS = false;
-	options.DOREVERSEINDEX = false;
-	options.QUIET = true;
-
-	_pattern_model.train(dat_output_file, options, nullptr);
+	_pattern_model.train(dat_output_file, _pattern_model_options, nullptr);
 	_corpus_frequency = _pattern_model.tokens();
 
 }
+
+//void ColibriPLM::create_document_model(boost::filesystem::path input_file)
+//{
+//	std::ifstream input_stream;
+//	input_stream.open(input_file.string().c_str());
+//
+//	std::ostream output_stream;
+//
+//
+//	_class_encoder.encodefile((std::istream*) &input_stream, &output_stream, false, false, false);
+//
+//	PatternModel<uint32_t> document_model = PatternModel<uint32_t>();
+//
+//	std::istream new_input_stream;
+//
+//	std::copy_n( std::ostreambuf_iterator<char>(output_stream),
+//	        100,
+//	        std::istreambuf_iterator<char>(new_input_stream)
+//	);
+//
+//	document_model.train(&new_input_stream, _pattern_model_options, nullptr);
+//
+//	input_stream.close();
+//}
 
 double ColibriPLM::background_prob(Pattern pattern)
 {

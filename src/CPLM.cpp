@@ -45,7 +45,7 @@ int main(int args, char** argv) {
 	}
 
 	ColibriPLM plm = ColibriPLM(0.5);
-	plm.fit(background_input_files);
+	plm.create_background_model(background_input_files);
 
 	/// FOREGROUND
 

@@ -19,7 +19,8 @@
 class PLM {
 public:
 
-	virtual void fit(std::vector<boost::filesystem::path> input_files) = 0;
+	virtual void create_background_model(std::vector<boost::filesystem::path> input_files) = 0;
+	virtual void create_document_model(boost::filesystem::path input_file) = 0;
 	virtual double background_prob(Pattern pattern) = 0;
 	virtual double weighted_background_logprob(Pattern pattern) = 0;
 	virtual void create_lm(std::vector<boost::filesystem::path> input_files) = 0;
@@ -39,7 +40,8 @@ public:
 	ColibriPLM(double interpolation_factor);
 	virtual ~ColibriPLM();
 
-	void fit(std::vector<boost::filesystem::path> input_files) override;
+	void create_background_model(std::vector<boost::filesystem::path> input_files) override;
+	void create_document_model(boost::filesystem::path input_file) override;
 	double background_prob(Pattern pattern) override;
 	double weighted_background_logprob(Pattern pattern) override;
 	void create_lm(std::vector<boost::filesystem::path> input_files) override;
@@ -48,6 +50,7 @@ private:
 	ClassEncoder _class_encoder;
 	ClassDecoder _class_decoder;
 	PatternModel<uint32_t> _pattern_model;
+	PatternModelOptions _pattern_model_options;
 };
 
 #endif /* PLM_HPP_ */
