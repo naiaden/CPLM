@@ -52,13 +52,16 @@ int main(int args, char** argv) {
 	boost::filesystem::path foreground_dir("/tmp/vac1");
 	boost::filesystem::directory_iterator fit(foreground_dir), feod;
 
-	std::vector<boost::filesystem::path> foreground_input_files;
 	BOOST_FOREACH(boost::filesystem::path const &p, std::make_pair(fit, feod))
 	{
 	    if(is_regular_file(p) && p.extension() == ".txt")
 	    {
-//	    	foreground_input_files.push_back(p);
 	    	plm.create_document_model(p);
+//	    	auto word_probs =
+//	    	for (auto p : word_probs)
+//	    	{
+//	    		std::cout << p.second << std::endl;
+//	    	}
 	    }
 	}
 
