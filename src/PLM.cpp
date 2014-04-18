@@ -26,7 +26,7 @@ ColibriPLM::ColibriPLM(double interpolation_factor) : PLM(interpolation_factor) 
 	_pattern_model_options.MAXLENGTH = 1;
 	_pattern_model_options.DOSKIPGRAMS = false;
 	_pattern_model_options.DOREVERSEINDEX = false;
-	_pattern_model_options.QUIET = true;
+	_pattern_model_options.QUIET = false;
 
 }
 
@@ -55,29 +55,28 @@ void ColibriPLM::create_background_model(std::vector<boost::filesystem::path> in
 
 }
 
-//void ColibriPLM::create_document_model(boost::filesystem::path input_file)
-//{
-//	std::ifstream input_stream;
-//	input_stream.open(input_file.string().c_str());
-//
-//	std::ostream output_stream;
-//
-//
-//	_class_encoder.encodefile((std::istream*) &input_stream, &output_stream, false, false, false);
-//
+void ColibriPLM::create_document_model(boost::filesystem::path input_file)
+{
+//	std::cout << "Creating document model for " << input_file.string() << " ";
+
+	std::ifstream input_stream;
+	input_stream.open(input_file.string().c_str());
+
+	std::stringstream through_stream;
+
+	_class_encoder.encodefile((std::istream*) &input_stream, (std::ostream*) &through_stream, false, false, true);
+
+	std::cout << ">>" << through_stream.str() << "<<" << std::endl;
+
+	input_stream.close();
+
 //	PatternModel<uint32_t> document_model = PatternModel<uint32_t>();
 //
-//	std::istream new_input_stream;
+//	document_model.train((std::istream*) &through_stream, _pattern_model_options, nullptr);
 //
-//	std::copy_n( std::ostreambuf_iterator<char>(output_stream),
-//	        100,
-//	        std::istreambuf_iterator<char>(new_input_stream)
-//	);
-//
-//	document_model.train(&new_input_stream, _pattern_model_options, nullptr);
-//
-//	input_stream.close();
-//}
+//	std::cout << document_model.size() << std::endl;
+
+}
 
 double ColibriPLM::background_prob(Pattern pattern)
 {

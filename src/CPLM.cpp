@@ -49,7 +49,7 @@ int main(int args, char** argv) {
 
 	/// FOREGROUND
 
-	boost::filesystem::path foreground_dir("/tmp/vac");
+	boost::filesystem::path foreground_dir("/tmp/vac1");
 	boost::filesystem::directory_iterator fit(foreground_dir), feod;
 
 	std::vector<boost::filesystem::path> foreground_input_files;
@@ -57,10 +57,10 @@ int main(int args, char** argv) {
 	{
 	    if(is_regular_file(p) && p.extension() == ".txt")
 	    {
-	    	foreground_input_files.push_back(p);
+//	    	foreground_input_files.push_back(p);
+	    	plm.create_document_model(p);
 	    }
 	}
-
 
 	return 0;
 }
