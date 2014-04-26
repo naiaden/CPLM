@@ -83,87 +83,47 @@ std::vector<std::pair<Pattern, double>> ColibriPLM::create_document_model(boost:
 //	std::vector<double> word_probs = std::accumulate(document_model.begin(), document_model.end(),
 //			std::vector<double>(), [=](std::vector<double>& dd, PatternModel<uint32_t>::iterator p) {dd.push_back(document_model.occurrencecount(p->first)); return dd;} );
 
-//	std::vector<std::pair<Pattern, double>> word_probs = std::vector<std::pair<Pattern, double>>();
-	std::shared_ptr<std::vector<std::pair<Pattern, double>>> pWord_probs(new std::vector<std::pair<Pattern, double>>());
+	std::vector<std::pair<Pattern, double>> word_probs = std::vector<std::pair<Pattern, double>>();
 	for(auto &p : document_model)
 	{
-		pWord_probs->push_back(std::pair<Pattern, double>(p.first, 1.0*document_model.occurrencecount(p.first)/document_model.tokens()));
+		word_probs.push_back(std::pair<Pattern, double>(p.first, 1.0*document_model.occurrencecount(p.first)/document_model.tokens()));
 	}
 
 	// em
-//	std::vector<std::pair<Pattern, double>> temp = std::vector<std::pair<Pattern, double>>();
-
-	std::shared_ptr<std::vector<std::pair<Pattern, double>>> pTemp(new std::vector<std::pair<Pattern, double>>());
+	std::vector<std::pair<Pattern, double>> temp = std::vector<std::pair<Pattern, double>>();
 
 	for (int iterations : range(50))
 	{
 		double e_tot = 0.0;
 
-		pTemp->clear();
-
-		std::cerr << "ts:" << pTemp->size() << " wps:" << pWord_probs->size() << "\t";
-
-//		for (int bla : range(pWord_probs->size()))
-//				    std::cerr << "[" << (*pWord_probs)[bla].first.data << "|" << (*pWord_probs)[bla].second << ']';
+		temp.clear();
 
 		// e
-		for (int i : range(pWord_probs->size()))
+		for (int i : range(word_probs.size()))
 		{
 
-			Pattern p = (*pWord_probs)[i].first;
-			double word_prob = (*pWord_probs)[i].second;
-//			std::cerr << "[" << word_prob << "|";
+//			double e_i = log(document_model.occurrencecount(p)) + log(_interpolation_factor) + log(word_prob) - log(background_prob(p) * (1-_interpolation_factor) + _interpolation_factor*word_prob);
 
+			Pattern p = word_probs[i].first;
+			double word_prob = word_probs[i].second;
 
-
-			double t1 = document_model.occurrencecount(p);
-			double t2 = _interpolation_factor*word_prob;
-			double t3 = background_prob(p + _interpolation_factor*word_prob);
-
-
-			double t4 = t1 * t2;
-			double t5 = (1-_interpolation_factor) * t3;
-
-//			std::cerr << "1:" << t1 << ":2:" << t2 << ":3:" << t3 << ":4:" << t4 << ":5:" << t5 << "]";
-
-//			std::cerr << "(" << t4 << "/" << t5 << "=" << t4/t5 << ")";
-
-			double e_i = t4/t5;
-
-//			double e_i = document_model.occurrencecount(p) * _interpolation_factor*word_prob / ((1-_interpolation_factor)*background_prob(p + _interpolation_factor*word_prob));
+			double e_i = document_model.occurrencecount(p) * _interpolation_factor*word_prob / ((1-_interpolation_factor)*background_prob(p) + _interpolation_factor*word_prob);
 			e_tot += e_i;
-//			std::cerr << "c";
-//			std::pair<Pattern, double> zomaar = std::pair<Pattern, double>(p, 0.05);
-			pTemp->push_back(std::make_pair(p, e_i));
-//			pTemp->push_back(std::pair<Pattern, double>(p, e_i));
-//			std::cerr << "d";
+			temp.push_back(std::make_pair(p, e_i));
 		}
 
-
-
-		std::cerr << "e";
-
-		pWord_probs->clear();
-
-//		std::
-
-		e_tot = 4.0;
+		word_probs.clear();
 
 //		// m
-		for (int i : range(pTemp->size()))
+		for (int i : range(temp.size()))
 		{
-//			(*pTemp)[i] = std::pair<Pattern, double>((*pTemp)[i].first, 1.0*(*pTemp)[i].second/e_tot);
-			std::cerr << "[" << (*pTemp)[i].second << "," << e_tot << "]";
-			pWord_probs->push_back(std::make_pair((*pTemp)[i].first, 1.0*(*pTemp)[i].second/e_tot));
+			word_probs.push_back(std::make_pair(temp[i].first, 1.0*temp[i].second/e_tot));
 
 		}
 
-		std::cerr << "\tts:" << pTemp->size() << " wps:" << pWord_probs->size() << std::endl;
-
-//		pWord_probs.swap(pTemp);
 	}
 
-	return *pWord_probs;
+	return word_probs;
 }
 
 double ColibriPLM::background_prob(Pattern pattern)
