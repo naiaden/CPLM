@@ -29,7 +29,7 @@ ColibriPLM::ColibriPLM(double interpolation_factor) : PLM(interpolation_factor) 
 	_pattern_model_options.MAXLENGTH = 1;
 	_pattern_model_options.DOSKIPGRAMS = false;
 	_pattern_model_options.DOREVERSEINDEX = false;
-	_pattern_model_options.QUIET = false;
+	_pattern_model_options.QUIET = true;
 	_pattern_model_options.MINTOKENS = 1;
 
 }
@@ -46,7 +46,7 @@ void ColibriPLM::create_background_model(std::vector<boost::filesystem::path> in
 	    return v;
 	   });
 
-	_class_encoder.build(input_file_names);
+	_class_encoder.build(input_file_names, true);
 
 	_class_encoder.save("/tmp/tmpout/somefilename.colibri.cls");
 
@@ -92,7 +92,10 @@ std::vector<std::pair<Pattern, double>> ColibriPLM::create_document_model(boost:
 	// em
 	std::vector<std::pair<Pattern, double>> temp = std::vector<std::pair<Pattern, double>>();
 
-	for (int iterations : range(50))
+//	double epsilon = 0.05;
+	int iterations = 100;
+
+	for (int iteration : range(iterations))
 	{
 		double e_tot = 0.0;
 
@@ -122,6 +125,9 @@ std::vector<std::pair<Pattern, double>> ColibriPLM::create_document_model(boost:
 		}
 
 	}
+
+
+	for(auto a : word_probs) std::cout << a.first.tostring(_class_decoder) << ":" << a.second << std::endl;
 
 	return word_probs;
 }
