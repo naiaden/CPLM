@@ -12,6 +12,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "utils.hpp"
+
 #include <classencoder.h>
 #include <classdecoder.h>
 #include <patternmodel.h>
@@ -25,18 +27,17 @@ public:
 	virtual double weighted_background_logprob(Pattern pattern) = 0;
 
 protected:
-	PLM(double interpolation_factor);
+	PLM(ProgramOptions program_options);
 		virtual ~PLM() {};
 
-
-	double _interpolation_factor;
+	ProgramOptions _program_options;
 	double _corpus_frequency;
 
 };
 
 class ColibriPLM: public PLM {
 public:
-	ColibriPLM(double interpolation_factor);
+	ColibriPLM(ProgramOptions program_options);
 	virtual ~ColibriPLM();
 
 	void create_background_model(std::vector<boost::filesystem::path> input_files) override;
@@ -44,11 +45,14 @@ public:
 	double background_prob(Pattern pattern) override;
 	double weighted_background_logprob(Pattern pattern) override;
 
+	ClassDecoder getDecoder();
+
 private:
 	ClassEncoder _class_encoder;
 	ClassDecoder _class_decoder;
 	PatternModel<uint32_t> _pattern_model;
 	PatternModelOptions _pattern_model_options;
+
 };
 
 #endif /* PLM_HPP_ */

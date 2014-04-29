@@ -15,11 +15,11 @@
 #include "pattern.h"
 #include "utils.hpp"
 
-PLM::PLM(double interpolation_factor) : _interpolation_factor(interpolation_factor), _corpus_frequency(0) {
+PLM::PLM(ProgramOptions program_options) : _program_options(program_options), _corpus_frequency(0) {
 
 }
 
-ColibriPLM::ColibriPLM(double interpolation_factor) : PLM(interpolation_factor) {
+ColibriPLM::ColibriPLM(ProgramOptions program_options) : PLM( program_options) {
 	_class_encoder = ClassEncoder();
 	_class_decoder = ClassDecoder();
 	_pattern_model = PatternModel<uint32_t>();
@@ -48,16 +48,16 @@ void ColibriPLM::create_background_model(std::vector<boost::filesystem::path> in
 
 	_class_encoder.build(input_file_names, true);
 
-	_class_encoder.save("/tmp/tmpout/somefilename.colibri.cls");
+	_class_encoder.save(_program_options._generated_output_directory + "/somefilename.colibri.cls");
 
-	std::string dat_output_file = "/tmp/tmpout/somefilename.colibri.dat";
+	std::string dat_output_file = _program_options._generated_output_directory + "/somefilename.colibri.dat";
 
 	for(auto i : input_file_names)
 	{
 		_class_encoder.encodefile(i, dat_output_file, false, false, true, true);
 	}
 
-	_class_decoder.load("/tmp/tmpout/somefilename.colibri.cls");
+	_class_decoder.load(_program_options._generated_output_directory + "/somefilename.colibri.cls");
 
 	_pattern_model.train(dat_output_file, _pattern_model_options, nullptr);
 	_corpus_frequency = _pattern_model.tokens();
@@ -110,7 +110,7 @@ std::vector<std::pair<Pattern, double>> ColibriPLM::create_document_model(boost:
 			Pattern p = word_probs[i].first;
 			double word_prob = word_probs[i].second;
 
-			double e_i = document_model.occurrencecount(p) * _interpolation_factor*word_prob / ((1-_interpolation_factor)*background_prob(p) + _interpolation_factor*word_prob);
+			double e_i = document_model.occurrencecount(p) * _program_options._weight*word_prob / ((1-_program_options._weight)*background_prob(p) + _program_options._weight*word_prob);
 			e_tot += e_i;
 			temp.push_back(std::make_pair(p, e_i));
 		}
@@ -126,9 +126,6 @@ std::vector<std::pair<Pattern, double>> ColibriPLM::create_document_model(boost:
 
 	}
 
-
-	for(auto a : word_probs) std::cout << a.first.tostring(_class_decoder) << ":" << a.second << std::endl;
-
 	return word_probs;
 }
 
@@ -139,9 +136,13 @@ double ColibriPLM::background_prob(Pattern pattern)
 
 double ColibriPLM::weighted_background_logprob(Pattern pattern)
 {
-	return log(background_prob(pattern) * (1-_interpolation_factor));
+	return log(background_prob(pattern) * (1-_program_options._weight));
 }
 
 ColibriPLM::~ColibriPLM() {
 	// TODO Auto-generated destructor stub
+}
+
+ClassDecoder ColibriPLM::getDecoder() {
+	return _class_decoder;
 }
