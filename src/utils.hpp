@@ -88,18 +88,11 @@ class ProgramOptions {
 				TCLAP::ValueArg<int> maxn("n","maxn","the max number of n for generating n-grams",false,3,"int", cmd);
 				TCLAP::ValueArg<int> em_iterations("i","iterations","the number of iterations for EM",false,50,"int", cmd);
 
-
-
 				TCLAP::ValueArg<int> threads("t","threads","number of threads", false, 1, "int", cmd);
 
 				TCLAP::ValueArg<int> verboseArgument("V","verbose","print verbose", false, 0, "int", cmd);
 
-
-
 				cmd.parse( argc, argv );
-
-
-
 
 				_background_input_directory = background_input_directory.getValue();
 				_foreground_input_directory = foreground_input_directory.getValue();
